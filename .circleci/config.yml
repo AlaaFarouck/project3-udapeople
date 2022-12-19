@@ -1,5 +1,8 @@
 version: 2.1
 
+orbs:
+  slack: circleci/slack@4.12.0
+
 jobs:
 
   build-frontend:
@@ -14,10 +17,15 @@ jobs:
           command: |
             cd frontend
             npm install
-            npm run build
+            nkncjfefeipm run build
       - save_cache:
           paths: [frontend/node_modules]
           key: frontend-build
+
+      - slack/notify:
+          channel: module-3-project
+          event: fail
+          template: basic_fail_1
 
   build-backend:
     docker:
@@ -98,7 +106,11 @@ jobs:
 workflows:
   default:
     jobs:
-      - build-frontend
+
+      - build-frontend:
+          context: 
+            - udaproject-context
+
       - build-backend
       - test-frontend:
           requires: [build-frontend]
