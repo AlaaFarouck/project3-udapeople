@@ -51,15 +51,15 @@ commands:
             unzip awscliv2.zip
             sudo ./aws/install
 
-  install_ansible:
+  install_ansible: 
     description: Install Ansible
     steps:
       - run:
           name: Install Ansible
           command: |
             python3 -m pip install --user ansible        
-  
-  install_nodejs:
+
+  install_nodejs: 
     description: Install Node.js 13.8.0
     steps:
       - run:
@@ -288,7 +288,7 @@ jobs:
 
   deploy-backend:
     docker:
-      - image: cimg/node:13.8.0
+      - image: cimg/python:3.10
     steps:
       - checkout
       - add_ssh_keys:
@@ -297,13 +297,13 @@ jobs:
           at: ~/
       - restore_cache:
           keys: [backend-build]
-          
+
 
       - run:
           name: Install dependencies
           command: |
             sudo apt-get install tar gzip -y
-            apt-get install python -y
+            sudo apt-get update && sudo apt-get install -yy less
       - install_awscli
       - install_ansible
       - install_nodejs
