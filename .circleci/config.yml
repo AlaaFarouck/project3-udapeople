@@ -302,7 +302,7 @@ jobs:
           name: Install dependencies
           command: |
             sudo apt-get install tar gzip -y
-
+            apt-get install python -y
       - install_awscli
       - install_ansible
       - install_nodejs
