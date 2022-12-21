@@ -381,7 +381,6 @@ jobs:
 workflows:
   default:
     jobs:
-
       - build-frontend:
           context: 
             - udaproject-context
