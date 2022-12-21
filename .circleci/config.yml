@@ -418,16 +418,16 @@ jobs:
       - image: amazon/aws-cli
     steps:
       - checkout
-      - attach_workspace:
-          at: /tmp/workspace
       - run:
           name: Install dependency
           command: |
             yum install -y gzip
-            yum install -y tar
+            yum install -y tar gzip
+      - attach_workspace:
+          at: /tmp/workspace
 
       - run:
-          name: Remove old stacks and files
+          name: keep only new
           command: |
 
             export OldWorkflowID=$(head -1 /tmp/workspace/old_workflow_id)
