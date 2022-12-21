@@ -398,7 +398,12 @@ jobs:
                       list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
                       --no-paginate --output text)
             echo "Old Wokflow ID $OLD_WORKFLOW_ID" >>~/project/oldWorkFlowID.txt
-            curl https://kvdb.io/K3ccY64K5uVsNkNYTgcxZx/old_workflow_id -d "${OLD_WORKFLOW_ID}"
+            curl https://kvdb.io/K3ccY64K5uVsNkNYTgcxZx/OLD_WORKFLOW_ID -d "${CIRCLE_WORKFLOW_ID:0:7}"
+
+      # - persist_to_workspace:
+      #     root: ~/
+      #     paths:
+      #       - ~/project/oldWorkFlowID.txt
 
       - run:
           name: Update cloudfront distribution
@@ -408,10 +413,6 @@ jobs:
               --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:7}" \
               --stack-name InitialStack
       
-      - persist_to_workspace:
-          root: ~/
-          paths:
-            - ~/project/oldWorkFlowID.txt
 
       - destroy-environment
       - revert-migrations
@@ -421,8 +422,8 @@ jobs:
       - image: amazon/aws-cli
     steps:
       - checkout  
-      - attach_workspace:
-          at: ~/
+      # - attach_workspace:
+      #     at: ~/
       - run:
           name: Install dependencies
           command: |
