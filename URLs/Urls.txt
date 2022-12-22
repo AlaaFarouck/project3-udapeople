@@ -1,0 +1,14 @@
+1]A public git repository with your project code. [URL01]
+https://github.com/AlaaFarouck/project3-udapeople
+**************************************************************************************************
+2]Evidence of deployed and functioning front-end application in an S3 bucket [URL02]
+https://s3.console.aws.amazon.com/s3/buckets/udapeople-c7d8202?region=us-east-1&tab=objects
+**************************************************************************************************
+3]CloudFront URL
+dkz7f94wgyeml.cloudfront.net
+**************************************************************************************************
+4]Evidence of healthy back-end application
+https://ec2-3-91-204-224.compute-1.amazonaws.com:3030/api/status
+**************************************************************************************************
+5]Evidence of Prometheus Server
+http://ec2-3-82-144-64.compute-1.amazonaws.com:9090/graph
