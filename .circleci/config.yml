@@ -354,12 +354,16 @@ jobs:
     docker:
       - image: amazon/aws-cli
     steps:
+
+      - checkout
+      - run:
+          name: Install dependency
+          command: |
+            yum install -y gzip
+            yum install -y tar gzip
+            yum install -y curl
       - attach_workspace:
           at: /tmp/workspace
-      - run:
-          name: Install dependencies
-          command: |
-            yum install -y curl
       - run:
           name: Backend smoke test.
           command: |
