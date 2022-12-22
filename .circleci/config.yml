@@ -1,9 +1,26 @@
+#################################################################################################################
+#    Project title: Give Your Application Auto-Deploy Superpowers                                               #
+#    Author: Alaa El-Din Mohamed Osman                                                                          #
+#    Date: 22/12/2022                                                                                           #
+#################################################################################################################
+
+
+#################################################################################################################
+# --------------------------------------------version---------------------------------------------------------- #
+#################################################################################################################
 version: 2.1
 
+
+#################################################################################################################
+# ----------------------------------------------orbs----------------------------------------------------------- #
+#################################################################################################################
 orbs:
   slack: circleci/slack@4.12.0
 
 
+#################################################################################################################
+# --------------------------------------------commands--------------------------------------------------------- #
+#################################################################################################################
 commands:
   destroy-environment:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
@@ -20,7 +37,7 @@ commands:
             aws cloudformation delete-stack --stack-name udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}
             aws cloudformation delete-stack --stack-name udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}
             aws s3 rm "s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}" --recursive
-
+#################################################################################################################
   revert-migrations:
     description: Revert the last migration
     parameters:
@@ -40,8 +57,7 @@ commands:
               npm install
               npm run migration:revert
             fi
-
-
+#################################################################################################################
   install_awscli:
     description: Install AWS CLI
     steps:
@@ -51,7 +67,7 @@ commands:
             curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
             unzip awscliv2.zip
             sudo ./aws/install
-
+#################################################################################################################
   install_ansible: 
     description: Install Ansible
     steps:
@@ -59,7 +75,7 @@ commands:
           name: Install Ansible
           command: |
             python3 -m pip install --user ansible        
-
+#################################################################################################################
   install_nodejs: 
     description: Install Node.js 13.8.0
     steps:
@@ -71,6 +87,10 @@ commands:
             sudo npm install --global n
             sudo n 13.8.0
 
+
+#################################################################################################################
+# ----------------------------------------------jobs----------------------------------------------------------- #
+#################################################################################################################
 jobs:
   build-frontend:
     docker:
@@ -88,12 +108,11 @@ jobs:
       - save_cache:
           paths: [frontend/node_modules]
           key: frontend-build
-
       - slack/notify:
           channel: module-3-project
           event: fail
           template: basic_fail_1
-
+#################################################################################################################
   build-backend:
     docker:
       - image: circleci/node:13.8.0
@@ -110,7 +129,7 @@ jobs:
       - save_cache:
           paths: [backend/node_modules]
           key: backend-build
-
+#################################################################################################################
   test-frontend:
     docker:
       - image: circleci/node:13.8.0
@@ -124,7 +143,7 @@ jobs:
             cd frontend
             npm install
             npm run test
-
+#################################################################################################################
   test-backend:
     docker:
       - image: circleci/node:13.8.0
@@ -138,7 +157,7 @@ jobs:
             cd backend
             npm install
             npm run test
-
+#################################################################################################################
   scan-frontend:
     docker:
       - image: circleci/node:13.8.0
@@ -153,7 +172,7 @@ jobs:
             npm install
             npm install oauth-sign@^0.9.0
             npm audit fix --audit-level=critical
-
+#################################################################################################################
   scan-backend:
     docker:
       - image: circleci/node:13.8.0
@@ -168,7 +187,7 @@ jobs:
             npm install
             npm install oauth-sign@^0.9.0
             npm audit fix --audit-level=critical
-
+#################################################################################################################
   deploy-infrastructure:
     docker:
       - image: amazon/aws-cli
@@ -178,7 +197,6 @@ jobs:
           name: install tar and gzip
           command: |
             yum install -y tar gzip
-
       - run:
           name: Ensure back-end infrastructure exists
           command: |
@@ -186,7 +204,6 @@ jobs:
                 --template-file .circleci/files/backend.yml \
                 --stack-name udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7} \
                 --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"
-
       - run:
           name: Ensure front-end infrastructure exist
           command: |
@@ -208,7 +225,7 @@ jobs:
           paths:
             - project/.circleci/ansible/inventory.txt
       - destroy-environment
-
+#################################################################################################################
   configure-infrastructure:
     docker:
       - image: python:3.7-alpine3.11
@@ -229,7 +246,7 @@ jobs:
             cd .circleci/ansible
             cat inventory.txt
             ansible-playbook -i inventory.txt configure-server.yml
-
+#################################################################################################################
   run-migrations:
     docker:
       - image: cimg/node:13.8.0
@@ -254,8 +271,7 @@ jobs:
             fi
       - revert-migrations
       - destroy-environment
-
-
+#################################################################################################################
   deploy-frontend:
     docker:
       - image: cimg/node:13.8.0
@@ -286,7 +302,7 @@ jobs:
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
       - destroy-environment
       - revert-migrations
-
+#################################################################################################################
   deploy-backend:
     docker:
       - image: cimg/python:3.10
@@ -298,8 +314,6 @@ jobs:
           at: ~/
       - restore_cache:
           keys: [backend-build]
-
-
       - run:
           name: Install dependencies
           command: |
@@ -308,7 +322,6 @@ jobs:
       - install_awscli
       - install_ansible
       - install_nodejs
-      
       - run:
           name: Install dependencies
           command: |
@@ -322,7 +335,6 @@ jobs:
             tar -czvf artifact.tar.gz dist/* package*
             cd ..
             cp backend/artifact.tar.gz .circleci/ansible/roles/deploy/files
-
       - run:
           name: Deploy backend
           command: |
@@ -333,11 +345,9 @@ jobs:
             echo "Contents  of the inventory file is -------"
             cat inventory.txt
             ansible-playbook -i inventory.txt deploy-backend.yml
-
       - destroy-environment
       - revert-migrations
-
-
+#################################################################################################################
   smoke-test:
     docker:
       - image: amazon/aws-cli
@@ -346,12 +356,6 @@ jobs:
           name: Install dependencies
           command: |
             yum install -y curl
-      # - run:
-      #     name: Get backend url
-      #     command: |
-      #       export BACKEND_IP=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" --output text)
-      #       export API_URL="http://${BACKEND_IP}:3030"
-      #       echo "${API_URL}"
       - run:
           name: Backend smoke test.
           command: |
@@ -377,8 +381,7 @@ jobs:
             fi 
       - destroy-environment
       - revert-migrations
-
-
+#################################################################################################################
   cloudfront-update:
     docker:
       - image: amazon/aws-cli
@@ -389,11 +392,9 @@ jobs:
           command: |
             yum install -y curl
             yum install -y tar gzip
-
       - run:
           name: Save old Workflow ID to kvdb.io
           command: |
-
             export OLD_WORKFLOW_ID=$(aws cloudformation \
                       list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
                       --no-paginate --output text)
@@ -412,7 +413,7 @@ jobs:
               --stack-name InitialStack
       - destroy-environment
       - revert-migrations
-
+#################################################################################################################
   cleanup:
     docker:
       - image: amazon/aws-cli
@@ -425,11 +426,9 @@ jobs:
             yum install -y tar gzip
       - attach_workspace:
           at: /tmp/workspace
-
       - run:
           name: keep only new
           command: |
-
             export OldWorkflowID=$(head -1 /tmp/workspace/old_workflow_id)
             if [[ "${CIRCLE_WORKFLOW_ID:0:7}" != "${OldWorkflowID}" ]]
             then          
@@ -440,13 +439,17 @@ jobs:
             else 
                 echo "-------------------- CLEANUP FAILED! --------------------"
             fi
+
+
+#################################################################################################################
+# --------------------------------------------workflows-------------------------------------------------------- #
+#################################################################################################################
 workflows:
   default:
     jobs:
       - build-frontend:
           context: 
             - udaproject-context
-
       - build-backend
       - test-frontend:
           requires: [build-frontend]
