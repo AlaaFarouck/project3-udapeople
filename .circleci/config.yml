@@ -277,15 +277,13 @@ jobs:
       - image: cimg/node:13.8.0
     steps:
       - checkout
-      - install_awscli
-      - attach_workspace:
-          at: /tmp/workspace
       - restore_cache:
           keys: [frontend-build]
       - run:
           name: Install dependencies
           command: |
             sudo apt-get install tar gzip -y
+      - install_awscli
       - run:
           name: Get backend url
           command: |
@@ -313,7 +311,7 @@ jobs:
       - add_ssh_keys:
           fingerprints: ["35:fd:ed:7a:d2:ce:82:d7:e3:29:5c:ce:fa:90:64:13"]
       - attach_workspace:
-          at: /tmp/workspace
+          at: ~/
       - restore_cache:
           keys: [backend-build]
       - run:
@@ -354,14 +352,10 @@ jobs:
     docker:
       - image: amazon/aws-cli
     steps:
-      - checkout
       - run:
-          name: Install dependency
+          name: Install dependencies
           command: |
-            yum install -y gzip
-            yum install -y tar gzip
-      - attach_workspace:
-          at: /tmp/workspace
+            yum install -y curl
       - run:
           name: Backend smoke test.
           command: |
@@ -381,7 +375,7 @@ jobs:
             echo ${URL} 
             if curl -s ${URL} | grep "Welcome"
             then
-              exit 1
+              exit 0
             else
               exit 1
             fi 
