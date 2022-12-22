@@ -352,16 +352,14 @@ jobs:
 #################################################################################################################
   smoke-test:
     docker:
-      - image: amazon/aws-cli
+      - image: cimg/base:stable
     steps:
-
       - checkout
       - run:
           name: Install dependency
           command: |
             yum install -y gzip
             yum install -y tar gzip
-            yum install -y curl
       - attach_workspace:
           at: /tmp/workspace
       - run:
