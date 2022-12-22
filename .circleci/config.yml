@@ -352,7 +352,7 @@ jobs:
 #################################################################################################################
   smoke-test:
     docker:
-      - image: cimg/base:stable
+      - image: amazon/aws-cli
     steps:
       - checkout
       - run:
