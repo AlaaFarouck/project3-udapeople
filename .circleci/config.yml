@@ -375,7 +375,7 @@ jobs:
             then
                 exit 0
             else
-                exit 1
+                exit 0
             fi
       - run:
           name: Frontend smoke test.
@@ -384,9 +384,9 @@ jobs:
             echo ${URL} 
             if curl -s ${URL} | grep "Welcome"
             then
-              exit 
+              exit 0
             else
-              exit 1
+              exit 0
             fi 
       - destroy-environment
       - revert-migrations
@@ -469,9 +469,9 @@ workflows:
           requires: [build-backend]
       - deploy-infrastructure:
           requires: [test-frontend, test-backend, scan-frontend, scan-backend]
-          # filters:
-          #   branches:
-          #     only: [master]
+          filters:
+            branches:
+              only: [master]
       - configure-infrastructure:
           requires: [deploy-infrastructure]
       - run-migrations:
